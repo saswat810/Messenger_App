@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaCaretSquareDown,FaEdit,FaSistrix } from "react-icons/fa";
+import { FaCaretSquareDown } from "react-icons/fa";
 
 const FriendInfo = ({currentfriend,activeUser,message}) => {
   return (
@@ -40,7 +40,7 @@ const FriendInfo = ({currentfriend,activeUser,message}) => {
  
      <div className='gallery'>
      {
-          message && message.length>0 ? message.map((m,index)=>m.message.image && <img key={index} src={`./image/${m.message.image}`} />) : ''
+          message && message.length>0 ? message.map((m,index)=>m.message.image && <img alt='' key={index} src={`./image/${m.message.image}`} />) : ''
      }
      </div> 
 

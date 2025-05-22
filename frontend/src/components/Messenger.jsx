@@ -1,6 +1,5 @@
 import React,{ useEffect,useState,useRef } from 'react';
 import { FaEllipsisH,FaEdit,FaSistrix,FaSignOutAlt } from "react-icons/fa";
-import ActiveFriend from './ActiveFriend';
 import Friends from './Friends';
 import RightSide from './RightSide';
 import {useDispatch ,useSelector } from 'react-redux';
@@ -66,7 +65,7 @@ const Messenger = () => {
            payload : data
       })
  })
-
+ // eslint-disable-next-line react-hooks/exhaustive-deps
 },[]);
 
 
@@ -91,12 +90,14 @@ useEffect(() => {
          }
     }
     setSocketMessage('')
+     // eslint-disable-next-line react-hooks/exhaustive-deps
  },[socketMessage]);
 
 
 
 useEffect(() => {
      socket.current.emit('addUser', myInfo.id, myInfo)
+      // eslint-disable-next-line react-hooks/exhaustive-deps
  },[]);
 
  useEffect(() => {
@@ -115,7 +116,7 @@ useEffect(() => {
      })
 
 
-
+ // eslint-disable-next-line react-hooks/exhaustive-deps
  },[]);
 
  useEffect(() => {
@@ -133,6 +134,7 @@ useEffect(() => {
        })
 
       }
+       // eslint-disable-next-line react-hooks/exhaustive-deps
  },[socketMessage]);
 
 
@@ -183,6 +185,7 @@ useEffect(() => {
                type: 'MESSAGE_SEND_SUCCESS_CLEAR'
           })
       }
+       // eslint-disable-next-line react-hooks/exhaustive-deps
 },[mesageSendSuccess]);
 
 
@@ -195,12 +198,13 @@ useEffect(() => {
      useEffect(() => {
           dispatch(getFriends());
           dispatch({type:'NEW_USER_ADD_CLEAR'})
+           // eslint-disable-next-line react-hooks/exhaustive-deps
      },[new_user_add]);
 
      useEffect(() => {
          if(friends && friends.length > 0)
          setCurrentFriend(friends[0].fndInfo)
-       
+        // eslint-disable-next-line react-hooks/exhaustive-deps
      },[friends]);
 
 
@@ -209,6 +213,7 @@ useEffect(() => {
           if(friends.length > 0){
               
           }
+           // eslint-disable-next-line react-hooks/exhaustive-deps
       },[ currentfriend?._id]);
 
 
@@ -228,13 +233,14 @@ useEffect(() => {
            dispatch ({
                 type: 'MESSAGE_GET_SUCCESS_CLEAR'
            })
-           
+          // eslint-disable-next-line react-hooks/exhaustive-deps  
       },[ message_get_success]);
 
 
  
       useEffect(() => {
           scrollRef.current?.scrollIntoView({behavior: 'smooth'}) 
+           // eslint-disable-next-line react-hooks/exhaustive-deps
       },[ message]);
  
 
@@ -286,13 +292,14 @@ useEffect(() => {
 
      useEffect(() => {
          dispatch(getTheme());
+          // eslint-disable-next-line react-hooks/exhaustive-deps
       },[ ]);
  
       const search = (e) => {
 
           const getFriendClass = document.getElementsByClassName('hover-friend');
           const frienNameClass = document.getElementsByClassName('Fd_name');
-          for (var i = 0; i < getFriendClass.length, i < frienNameClass.length; i++) {
+          for (var i = 0; (i < getFriendClass.length, i < frienNameClass.length); i++) {
               let text = frienNameClass[i].innerText.toLowerCase();
               if (text.indexOf(e.target.value.toLowerCase()) > -1) {
                   getFriendClass[i].style.display = '';

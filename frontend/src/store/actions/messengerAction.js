@@ -91,7 +91,7 @@ export const getTheme = () => async(dispatch) => {
 
      const theme = localStorage.getItem('theme');
      dispatch({
-          type: "THEME_GET_SUCCESS",
+          type: THEME_GET_SUCCESS,
           payload : {
                theme : theme? theme : 'white'
           }
@@ -104,7 +104,7 @@ export const themeSet = (theme) => async(dispatch) => {
 
      localStorage.setItem('theme',theme);
      dispatch({
-          type: "THEME_SET_SUCCESS",
+          type: THEME_SET_SUCCESS,
           payload : {
                theme : theme
           }

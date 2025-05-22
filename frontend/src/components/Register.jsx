@@ -10,7 +10,7 @@ const Register = () => {
      const navigate = useNavigate();
      const alert = useAlert();
 
-     const {loading,authenticate,error,successMessage,myInfo} = useSelector(state=>state.auth);
+     const {authenticate,error,successMessage,myInfo} = useSelector(state=>state.auth);
      console.log(myInfo);
 
      const dispatch = useDispatch();
@@ -75,7 +75,7 @@ const Register = () => {
                error.map(err=>alert.error(err));
                dispatch({type : ERROR_CLEAR })
           }
-
+ // eslint-disable-next-line react-hooks/exhaustive-deps
      },[successMessage,error])
 
 
@@ -112,7 +112,7 @@ const Register = () => {
                <div className='form-group'>
                   <div className='file-image'>
                          <div className='image'>
-     {loadImage ? <img src={loadImage} /> : ''  }                         
+     {loadImage ? <img src={loadImage} alt=''/> : ''  }                         
                          </div>
                <div className='file'>
                <label htmlFor='image'>Select Image</label>

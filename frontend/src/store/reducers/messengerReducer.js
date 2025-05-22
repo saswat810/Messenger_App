@@ -105,7 +105,7 @@ export const messengerReducer = (state=messengerState,action) => {
           }
      }
 
-     if(type === 'SEEN_ALL'){
+     if(type === SEEN_ALL){
           const index = state.friends.findIndex(f=>f.fndInfo._id === payload.reseverId);
           state.friends[index].msgInfo.status = 'seen';
           return {

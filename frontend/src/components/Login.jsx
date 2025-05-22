@@ -11,7 +11,7 @@ const Login = () => {
 
      const alert = useAlert();
 
-     const {loading,authenticate,error,successMessage,myInfo} = useSelector(state=>state.auth);
+     const {authenticate,error,successMessage} = useSelector(state=>state.auth);
 
 
      const dispatch = useDispatch();
@@ -45,7 +45,7 @@ const Login = () => {
                error.map(err=>alert.error(err));
                dispatch({type : ERROR_CLEAR })
           }
-
+ // eslint-disable-next-line react-hooks/exhaustive-deps
      },[successMessage,error])
 
      return (
