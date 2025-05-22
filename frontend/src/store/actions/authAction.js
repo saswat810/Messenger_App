@@ -10,7 +10,7 @@ export const userRegister = (data) => {
                } 
           }
           try{
-               const response = await axios.post('/api/messenger/user-register',data,config);
+               const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/messenger/user-register`,data,config);
                localStorage.setItem('authToken',response.data.token);
 
                dispatch({
@@ -43,7 +43,7 @@ export const userLogin = (data) => {
         }
 
         try {
-            const response = await axios.post('/api/messenger/user-login', data, config);
+            const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/messenger/user-login`, data, config);
             localStorage.setItem('authToken', response.data.token);
             dispath({
                 type: USER_LOGIN_SUCCESS,
@@ -65,7 +65,7 @@ export const userLogin = (data) => {
 
 export const userLogout = () => async(dispatch) => {
      try{
-         const response = await axios.post('/api/messenger/user-logout');
+         const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/messenger/user-logout`);
          if(response.data.success){
              localStorage.removeItem('authToken');
              dispatch({
