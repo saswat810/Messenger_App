@@ -14,7 +14,9 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use('/api/messenger',authRouter);
 app.use('/api/messenger',messengerRoute);
-
+app.use(cors({
+  origin: '*',
+}));
 
 const PORT = process.env.PORT || 5000
 app.get('/', (req, res)=>{
