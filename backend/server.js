@@ -14,6 +14,7 @@ const app = express();
 
 // ✅ CORS config: allow credentials with specific origin(s)
 const allowedOrigins = [
+  'http://localhost:3000',
   'http://localhost:3001',
   'https://messenger-app-ljle.vercel.app',
 'https://messenger-app-ljle-saswaths-projects.vercel.app',
