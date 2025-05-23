@@ -9,7 +9,7 @@
     "socket": "nodemon socket/socket.js",
     "frontbuild": "npm install --frozen-lockfile && npm install --prefix frontend --frozen-lockfile && npm run build --prefix frontend",
     "socketbuild": "npm install --frozen-lockfile && npm install --prefix socket --frozen-lockfile",
-    "build" : "concurrently \" npm run frontbuild\" \" npm run socketbuild \"",
+    "build": "npm install --frozen-lockfile && npm install --prefix frontend --frozen-lockfile && npm run build --prefix frontend && npm install --prefix socket --frozen-lockfile",
     "dev": "concurrently \" npm run server\" \" npm run client \" \" npm run socket \""
   },
   "keywords": [],
