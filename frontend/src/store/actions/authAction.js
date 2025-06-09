@@ -33,35 +33,6 @@ export const userRegister = (data) => {
      }
 }
 
-export const userLogin = (data) => {
-    return async (dispath) => {
-
-        const config = {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }
-
-        try {
-            const response = await axios.post('/api/messenger/user-login', data, config);
-            localStorage.setItem('authToken', response.data.token);
-            dispath({
-                type: USER_LOGIN_SUCCESS,
-                payload: {
-                    successMessage: response.data.successMessage,
-                    token: response.data.token
-                }
-            })
-        } catch (error) {
-            dispath({
-                type: USER_LOGIN_FAIL,
-                payload: {
-                    error: error.response.data.error.errorMessage
-                }
-            })
-        }
-    }
-}
 
 export const userLogout = () => async(dispatch) => {
      try{
@@ -77,6 +48,42 @@ export const userLogout = () => async(dispatch) => {
 
      }
 }
+
+
+export const userLogin = (userData) => async (dispatch) => {
+  try {
+    const response = await axios.post(
+      '/api/messenger/user-login',
+      userData,
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        withCredentials: true // to allow cookies if needed
+      }
+    );
+
+    dispatch({
+      type: USER_LOGIN_SUCCESS,
+      payload: {
+        successMessage: response.data.successMessage,
+        token: response.data.token
+      }
+    });
+
+    // Save token in localStorage for persistence
+    localStorage.setItem('authToken', response.data.token);
+
+  } catch (error) {
+    dispatch({
+      type: USER_LOGIN_FAIL,
+      payload: {
+        error: error.response?.data?.error?.errorMessage || ['Login failed']
+      }
+    });
+  }
+};
+
 
 
 
