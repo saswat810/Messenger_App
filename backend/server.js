@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const dotenv = require('dotenv')
-
+const cors = require('cors');
 const databaseConnect = require('./config/database')
 const authRouter = require('./routes/authRoute')
 const bodyParser = require('body-parser');
@@ -14,7 +14,15 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use('/api/messenger',authRouter);
 app.use('/api/messenger',messengerRoute);
-
+app.use(cors({
+  origin: [
+    'https://messenger-app-new.onrender.com',
+    'http://localhost:3000', // your local frontend
+    'http://localhost:5000', // to test with Postman
+    'postman' // <- Optional if you're not validating the Origin manually
+  ],
+  credentials: true
+}));
 
 const PORT = process.env.PORT || 5000
 app.get('/', (req, res)=>{

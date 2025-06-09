@@ -87,7 +87,11 @@ module.exports.userRegister = (req, res) => {
                               expiresIn: process.env.TOKEN_EXP
                          }); 
 
-const options = { expires : new Date(Date.now() + process.env.COOKIE_EXP * 24 * 60 * 60 * 1000 )}
+const options = { expires : new Date(Date.now() + process.env.COOKIE_EXP * 24 * 60 * 60 * 1000 ),
+     httpOnly: true,
+  secure: true,       // REQUIRED on HTTPS (Render)
+  sameSite: 'None', 
+}
 
      res.status(201).cookie('authToken',token, options).json({
           successMessage : 'Your Register Successful',token
