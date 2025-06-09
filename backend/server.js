@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const dotenv = require('dotenv')
 
@@ -9,7 +10,10 @@ const cookieParser = require('cookie-parser');
 const messengerRoute = require('./routes/messengerRoute');
 
 dotenv.config()
-
+app.use(cors({
+     origin: ['https://messenger-app-new.onrender.com', 'http://localhost:3000', 'http://localhost:5000'],
+    credentials: true
+}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use('/api/messenger',authRouter);
