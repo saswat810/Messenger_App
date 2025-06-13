@@ -4,125 +4,87 @@ const registerModel = require('../models/authModel');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const console = require('console');
  
 
 module.exports.userRegister = (req, res) => {
+  const form = formidable({ multiples: false });
 
-     const form = formidable();
-     form.parse(req, async (err, fields, files) => {
+  form.parse(req, async (err, fields, files) => {
+    const { userName, email, password, confirmPassword } = fields;
+    const { image } = files;
+    const error = [];
 
-     const {
-          userName, email, password,confirmPassword
-     } = fields;
+    if (!userName) error.push('Please provide your user name');
+    if (!email) error.push('Please provide your Email');
+    if (email && !validator.isEmail(email)) error.push('Please provide a valid Email');
+    if (!password) error.push('Please provide your Password');
+    if (!confirmPassword) error.push('Please provide your Confirm Password');
+    if (password !== confirmPassword) error.push('Password and Confirm Password do not match');
+    if (password && password.length < 6) error.push('Password must be at least 6 characters');
+    if (!image) error.push('Please provide a user image');
 
-     const {image} = files;
-     const error = [];
+    if (error.length > 0) {
+      return res.status(400).json({
+        error: {
+          errorMessage: error
+        }
+      });
+    }
 
-     if(!userName){
-          error.push('Please provide your user name');
-     }
-     if(!email){
-          error.push('Please provide your Email');
-     }
-     if(email && !validator.isEmail(email)){
-          error.push('Please provide your Valid Email');
-     }
-     if(!password){
-          error.push('Please provide your Password');
-     }
-     if(!confirmPassword){
-          error.push('Please provide your confirm Password');
-     }
-     if(password && confirmPassword && password !== confirmPassword){
-          error.push('Your Password and Confirm Password not same');
-     }
-     if(password && password.length < 6){
-          error.push('Please provide password mush be 6 charecter');
-     }
-     if(Object.keys(files).length === 0){
-          error.push('Please provide user image');
-     }
-     if(error.length > 0){
-          res.status(400).json({
-               error:{
-                    errorMessage : error
-               }
-          })
-     } else {
-          const getImageName = files.image.originalFilename;
-          const randNumber = Math.floor(Math.random() * 99999 );
-          const newImageName = randNumber + getImageName;
-          files.image.originalFilename = newImageName;
-
-          const newPath = __dirname + `../../../frontend/public/image/${files.image.originalFilename}`;
-
-     try {
-          const checkUser = await registerModel.findOne({
-               email:email
-          });
-          if(checkUser) {
-               res.status(404).json({
-                    error: {
-                         errorMessage : ['Your email already exited']
-                    }
-               })
-          }else{
-               fs.copyFile(files.image.filepath,newPath, async(error) => {
-                    if(!error) {
-                         const userCreate = await registerModel.create({
-                              userName,
-                              email,
-                              password : await bcrypt.hash(password,10),
-                              image: files.image.originalFilename
-                         });
-
-                         const token = jwt.sign({
-                              id : userCreate._id,
-                              email: userCreate.email,
-                              userName: userCreate.userName,
-                              image: userCreate.image,
-                              registerTime : userCreate.createdAt
-                         }, process.env.SECRET,{
-                              expiresIn: process.env.TOKEN_EXP
-                         }); 
-
-const options = { expires : new Date(Date.now() + process.env.COOKIE_EXP * 24 * 60 * 60 * 1000 ),
-    httpOnly: true,
- secure: true,       // REQUIRED on HTTPS (Render)
-  sameSite: 'None', 
-}
-
-     res.status(201).cookie('authToken',token, options).json({
-          successMessage : 'Your Register Successful',token
-     })
-
-                          
-                    } else {
-                         res.status(500).json({
-                              error: {
-                                   errorMessage : ['Interanl Server Error']
-                              }
-                         })
-                    }
-               })
+    try {
+      const existingUser = await registerModel.findOne({ email });
+      if (existingUser) {
+          console.log("existingUser email already registered",existingUser )
+        return res.status(409).json({
+          error: {
+            errorMessage: ['Email is already registered']
           }
+        });
+      }
 
-     } catch (error) {
-          res.status(500).json({
-               error: {
-                    errorMessage : ['Interanl Server Error']
-               }
-          })
+      const imageBuffer = fs.readFileSync(image.filepath); // Read the image file
+console.log("imageBuffer", imageBuffer, "image", image)
+      const newUser = await registerModel.create({
+        userName,
+        email,
+        password: await bcrypt.hash(password, 10),
+        image: {
+          data: imageBuffer,
+          contentType: image.mimetype
+        }
+      });
 
-           } 
 
-               
-          } 
-          
-     }) // end Formidable  
-    
-}
+      const token = jwt.sign({
+        id: newUser._id,
+        email: newUser.email,
+        userName: newUser.userName,
+        registerTime: newUser.createdAt
+      }, process.env.SECRET, {
+        expiresIn: process.env.TOKEN_EXP
+      });
+console.log("newUser", newUser, "token", token)
+      const options = {
+        expires: new Date(Date.now() + process.env.COOKIE_EXP * 24 * 60 * 60 * 1000),
+        httpOnly: true,
+        secure: true,
+        sameSite: 'None'
+      };
+
+      return res.status(201).cookie('authToken', token, options).json({
+        successMessage: 'Your registration was successful',
+        token
+      });
+
+    } catch (error) {
+      return res.status(500).json({
+        error: {
+          errorMessage: ['Internal Server Error']
+        }
+      });
+    }
+  });
+};
 
 module.exports.userLogin = async (req,res) => {
       const error = [];
@@ -143,7 +105,6 @@ module.exports.userLogin = async (req,res) => {
                }
           })
      }else {
-console.log("email", email, "password", password, "error", error)
           try{
                const checkUser = await registerModel.findOne({
                     email:email
@@ -163,15 +124,6 @@ console.log("email", email, "password", password, "error", error)
                               expiresIn: process.env.TOKEN_EXP
                          }); 
       const options = { expires : new Date(Date.now() + process.env.COOKIE_EXP * 24 * 60 * 60 * 1000 )}
-console.log("email matchPassword", matchPassword, "checkUser", checkUser, "password", jwt.sign({
-                              id : checkUser._id,
-                              email: checkUser.email,
-                              userName: checkUser.userName,
-                              image: checkUser?.image,
-                              registerTime : checkUser.createdAt
-                         }, process.env.SECRET,{
-                              expiresIn: process.env.TOKEN_EXP
-                         }))
      res.status(200).cookie('authToken',token, options).json({
           successMessage : 'Your Login Successful',
           matchPassword: matchPassword,

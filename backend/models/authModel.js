@@ -14,8 +14,9 @@ const registerSchema = new Schema({
           required : true,
           select : false
      },
-     image : {
-          type: String,
+      image: {
+          data: Buffer,
+          contentType: String,
           required : true
      }
 },{timestamps : true});
