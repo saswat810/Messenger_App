@@ -1,37 +1,47 @@
 const express = require('express');
 const app = express();
-const dotenv = require('dotenv')
+const dotenv = require('dotenv');
 const cors = require('cors');
-const databaseConnect = require('./config/database')
-const authRouter = require('./routes/authRoute')
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
+const path = require('path');
+const databaseConnect = require('./config/database');
+const authRouter = require('./routes/authRoute');
 const messengerRoute = require('./routes/messengerRoute');
+const cookieParser = require('cookie-parser');
 
-dotenv.config()
+dotenv.config();
 
-app.use(bodyParser.json());
-app.use(cookieParser());
-app.use('/api/messenger',authRouter);
-app.use('/api/messenger',messengerRoute);
+// Connect to DB
+databaseConnect();
+
+// Middlewares
 app.use(cors({
   origin: [
     'https://messenger-app-new.onrender.com',
-    'http://localhost:3000', // your local frontend
-    'http://localhost:5000', // to test with Postman
-    'postman' // <- Optional if you're not validating the Origin manually
+    'http://localhost:3000',
+    'http://localhost:5000',
+    'postman'
   ],
   credentials: true
 }));
 
-const PORT = process.env.PORT || 5000
-app.get('/', (req, res)=>{
-     res.send('This is from backend Sever')
-})
+app.use(express.json()); // replaces bodyParser.json()
+app.use(cookieParser());
 
-databaseConnect();
+// API Routes
+app.use('/api/messenger', authRouter);
+app.use('/api/messenger', messengerRoute);
 
-app.listen(PORT, ()=>{
-     console.log("process.env.SECRET", process.env.SECRET)
-     console.log(`Server is running on port ${PORT}`)
-})
+// Serve React frontend (only in production or Render)
+const __dirnamePath = path.resolve();
+app.use(express.static(path.join(__dirnamePath, 'frontend', 'build')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirnamePath, 'frontend', 'build', 'index.html'));
+});
+
+// Start Server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log("process.env.SECRET:", process.env.SECRET);
+  console.log(`Server is running on port ${PORT}`);
+});
