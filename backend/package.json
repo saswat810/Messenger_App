@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "server": "nodemon backend/server.js",
+    "server": "nodemon server.js",
     "client": "npm start --prefix frontend",
     "socket": "nodemon socket/socket.js",
     "frontbuild": "npm install --frozen-lockfile && npm install --prefix frontend --frozen-lockfile && npm run build --prefix frontend",
