@@ -1,0 +1,32 @@
+{
+  "name": "messenger",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "server": "nodemon server.js",
+    "client": "npm start --prefix frontend",
+    "socket": "nodemon socket/socket.js",
+    "frontbuild": "npm install --frozen-lockfile && npm install --prefix frontend --frozen-lockfile && npm run build --prefix frontend",
+    "socketbuild": "npm install --frozen-lockfile && npm install --prefix socket --frozen-lockfile",
+    "build": "npm install --frozen-lockfile && npm install --prefix frontend --frozen-lockfile && npm run build --prefix frontend && npm install --prefix socket --frozen-lockfile",
+    "dev": "concurrently \" npm run server\" \" npm run client \" \" npm run socket \""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.19.1",
+    "concurrently": "^7.0.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^14.2.0",
+    "express": "^4.17.2",
+    "formidable": "^2.0.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.1.8",
+    "nodemon": "^2.0.15",
+    "validator": "^13.7.0"
+  }
+}

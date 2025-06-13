@@ -88,8 +88,8 @@ module.exports.userRegister = (req, res) => {
                          }); 
 
 const options = { expires : new Date(Date.now() + process.env.COOKIE_EXP * 24 * 60 * 60 * 1000 ),
-     httpOnly: true,
-  secure: true,       // REQUIRED on HTTPS (Render)
+    httpOnly: true,
+ secure: true,       // REQUIRED on HTTPS (Render)
   sameSite: 'None', 
 }
 
@@ -143,7 +143,7 @@ module.exports.userLogin = async (req,res) => {
                }
           })
      }else {
-
+console.log("email", email, "password", password, "error", error)
           try{
                const checkUser = await registerModel.findOne({
                     email:email
@@ -163,9 +163,20 @@ module.exports.userLogin = async (req,res) => {
                               expiresIn: process.env.TOKEN_EXP
                          }); 
       const options = { expires : new Date(Date.now() + process.env.COOKIE_EXP * 24 * 60 * 60 * 1000 )}
-
+console.log("email matchPassword", matchPassword, "checkUser", checkUser, "password", jwt.sign({
+                              id : checkUser._id,
+                              email: checkUser.email,
+                              userName: checkUser.userName,
+                              image: checkUser?.image,
+                              registerTime : checkUser.createdAt
+                         }, process.env.SECRET,{
+                              expiresIn: process.env.TOKEN_EXP
+                         }))
      res.status(200).cookie('authToken',token, options).json({
-          successMessage : 'Your Login Successful',token
+          successMessage : 'Your Login Successful',
+          matchPassword: matchPassword,
+          checkUser: checkUser,
+          token
      })
 
                     } else{
