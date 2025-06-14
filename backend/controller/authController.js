@@ -10,50 +10,62 @@ module.exports.userRegister = (req, res) => {
   const form = formidable({ multiples: false });
 
   form.parse(req, async (err, fields, files) => {
+    if (err) {
+      return res.status(500).json({
+        error: { errorMessage: ['Form parsing failed'] }
+      });
+    }
+
     const { userName, email, password, confirmPassword } = fields;
-    const { image } = files;
-    const error = [];
+    const imageFile = files.image;
 
-    if (!userName) error.push('Please provide your user name');
-    if (!email) error.push('Please provide your Email');
-    if (email && !validator.isEmail(email)) error.push('Please provide a valid Email');
-    if (!password) error.push('Please provide your Password');
-    if (!confirmPassword) error.push('Please provide your Confirm Password');
-    if (password !== confirmPassword) error.push('Password and Confirm Password do not match');
-    if (password && password.length < 6) error.push('Password must be at least 6 characters');
-    if (!image) error.push('Please provide a user image');
+    const errors = [];
 
-    if (error.length > 0) {
+    if (!userName) errors.push('Please provide your user name');
+    if (!email) errors.push('Please provide your Email');
+    if (email && !validator.isEmail(email)) errors.push('Please provide a valid Email');
+    if (!password) errors.push('Please provide your Password');
+    if (!confirmPassword) errors.push('Please provide your Confirm Password');
+    if (password && confirmPassword && password !== confirmPassword) errors.push('Passwords do not match');
+    if (password && password.length < 6) errors.push('Password must be at least 6 characters');
+    if (!imageFile) errors.push('Please provide a user image');
+console.log("errors", errors)
+    if (errors.length > 0) {
       return res.status(400).json({
-        error: {
-          errorMessage: error
-        }
+        error: { errorMessage: errors }
       });
     }
 
     try {
       const existingUser = await registerModel.findOne({ email });
       if (existingUser) {
-          console.log("existingUser email already registered",existingUser )
+          console.log("existingUse error", 'Email is already registered')
         return res.status(409).json({
-          error: {
-            errorMessage: ['Email is already registered']
-          }
+          error: { errorMessage: ['Email is already registered'] }
+        });
+      }
+console.log("existingUser", existingUser)
+      // Read image buffer safely
+      let imageBuffer;
+      try {
+        imageBuffer = fs.readFileSync(imageFile.filepath);
+      } catch (fileErr) {
+        console.error('Image read error:', fileErr);
+        return res.status(500).json({
+          error: { errorMessage: ['Could not read uploaded image file'] }
         });
       }
 
-      const imageBuffer = fs.readFileSync(image.filepath); // Read the image file
-console.log("imageBuffer", imageBuffer, "image", image)
       const newUser = await registerModel.create({
         userName,
         email,
         password: await bcrypt.hash(password, 10),
         image: {
           data: imageBuffer,
-          contentType: image.mimetype
+          contentType: imageFile.mimetype
         }
       });
-
+console.log("imageBuffer", imageBuffer,"newUser", newUser)
 
       const token = jwt.sign({
         id: newUser._id,
@@ -63,28 +75,29 @@ console.log("imageBuffer", imageBuffer, "image", image)
       }, process.env.SECRET, {
         expiresIn: process.env.TOKEN_EXP
       });
-console.log("newUser", newUser, "token", token)
+
       const options = {
         expires: new Date(Date.now() + process.env.COOKIE_EXP * 24 * 60 * 60 * 1000),
         httpOnly: true,
         secure: true,
         sameSite: 'None'
       };
+console.log("token", token,"options", options)
 
       return res.status(201).cookie('authToken', token, options).json({
-        successMessage: 'Your registration was successful',
+        successMessage: 'Registration successful',
         token
       });
 
-    } catch (error) {
+    } catch (err) {
+      console.error('Registration error:', err);
       return res.status(500).json({
-        error: {
-          errorMessage: ['Internal Server Error']
-        }
+        error: { errorMessage: ['Internal Server Error'] }
       });
     }
   });
 };
+
 
 module.exports.userLogin = async (req,res) => {
       const error = [];
