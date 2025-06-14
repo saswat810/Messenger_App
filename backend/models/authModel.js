@@ -14,10 +14,13 @@ const registerSchema = new Schema({
           required : true,
           select : false
      },
-      image: {
+     image: {
           data: Buffer,
-          type: String,
-          required : true
+          contentType: String
+     },
+     createdAt: {
+          type: Date,
+          default: Date.now
      }
 },{timestamps : true});
 
