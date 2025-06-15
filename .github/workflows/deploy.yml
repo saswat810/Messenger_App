@@ -1,19 +1,19 @@
-name: Deploy MERN App to EC2
+name: Deploy Messenger App to EC2
 
 on:
   push:
     branches:
-      - main  # Or whichever branch you want to trigger deployment
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
+    - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Set up SSH Key
+    - name: Setup SSH
       run: |
         mkdir -p ~/.ssh
         echo "${{ secrets.EC2_KEY }}" > ~/.ssh/id_rsa
@@ -22,21 +22,23 @@ jobs:
 
     - name: Deploy to EC2
       run: |
-        ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} '
-          cd ~ &&
-          echo "✅ Checking repo..." &&
+        ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
+          # Pull code from GitHub
           if [ ! -d "Messenger_App" ]; then
             git clone https://github.com/saswat810/Messenger_App.git
-          fi &&
-          cd Messenger_App &&
-          git pull origin main &&
-          echo "✅ Setting environment..." &&
-          echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" > .env &&
-          echo "✅ Installing dependencies..." &&
-          npm install --frozen-lockfile &&
-          npm run build &&
-          echo "✅ Restarting with PM2..." &&
-          pm2 delete all || true &&
-          pm2 start npm --name "messenger-app" -- run dev &&
+          fi
+          cd Messenger_App
+          git pull origin main
+
+          # Set environment variable for MongoDB URI
+          echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" > .env
+
+          # Install and build all projects
+          npm install --frozen-lockfile
+          npm run build
+
+          # Start with PM2
+          pm2 delete all || true
+          pm2 start npm --name "messenger-app" -- run dev
           pm2 save
-        '
+        EOF
