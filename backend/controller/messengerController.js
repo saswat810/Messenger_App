@@ -2,7 +2,7 @@ const User = require('../models/authModel');
 const messageModel = require('../models/messageModel');
 const formidable = require('formidable');
 const fs = require('fs');
-
+const path = require('path');
 
 const getLastMessage = async(myId, fdId) => {
      const msg = await messageModel.findOne({
@@ -146,59 +146,50 @@ module.exports.messageGet = async(req,res) => {
       
 }
 
+module.exports.ImageMessageSend = (req, res) => {
+  const senderId = req.myId;
 
-module.exports.ImageMessageSend = (req,res) => {
-     const senderId = req.myId;
-     const form = formidable();
+  const form = formidable({ multiples: false });
 
-     form.parse(req, (err, fields, files) => {
-          const {
-              senderName,
-              reseverId,
-              imageName 
-          } = fields;
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      return res.status(500).json({ error: { errorMessage: 'Form parsing error' } });
+    }
 
-          const newPath = __dirname + `../../../frontend/public/image/${imageName}`
-          files.image.originalFilename = imageName;
+    const { senderName, reseverId } = fields;
+    const file = files.image;
 
-          try{
-               fs.copyFile(files.image.filepath, newPath, async (err)=>{
-                    if(err){
-                         res.status(500).json({
-                              error : {
-                                   errorMessage: 'Image upload fail'
-                              }
-                         })
-                    } else{
-                         const insertMessage = await messageModel.create({
-                              senderId : senderId,
-                              senderName : senderName,
-                              reseverId : reseverId,
-                              message : {
-                                   text: '',
-                                   image : files.image.originalFilename
-                              }
-                         })
-                         res.status(201).json({
-                              success : true,
-                              message: insertMessage
-                         })
+    if (!file) {
+      return res.status(400).json({ error: { errorMessage: 'No image file uploaded' } });
+    }
 
-                    }
-               } )
+    try {
+      const imageBuffer = fs.readFileSync(file.filepath);
 
-          }catch (error){
-               res.status(500).json({
-                    error : {
-                         errorMessage: 'Internal Sever Error'
-                    }
-               })
-
+      const insertMessage = await messageModel.create({
+        senderId,
+        senderName,
+        reseverId,
+        message: {
+          text: '',
+          image: {
+            data: imageBuffer,
+            contentType: file.mimetype
           }
+        }
+      });
 
+      res.status(201).json({
+        success: true,
+        message: insertMessage
+      });
 
-     })
-}
+    } catch (error) {
+      console.error('Image Upload Error:', error);
+      res.status(500).json({ error: { errorMessage: 'Internal Server Error' } });
+    }
+  });
+};
 
 module.exports.messageSeen = async (req,res) => {
      const messageId = req.body._id;

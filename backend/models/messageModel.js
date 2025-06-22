@@ -18,10 +18,10 @@ const messageSchema = new Schema({
                type: String,
                default : ''
           },
-          image : {
-               type : String,
-               default : ''
-          }           
+          image: {
+          data: Buffer,
+          contentType: String         
+          },         
      },
      status :{
           type : String,

@@ -7,7 +7,7 @@ export const getFriends = () => async(dispatch) => {
            dispatch({
                 type: FRIEND_GET_SUCCESS,
                 payload : {
-                     friends : response.data.friends
+                     friends : response?.data?.friends ? response?.data?.friends : "No Users Yet"
                 }
            })
 

@@ -152,7 +152,7 @@ useEffect(() => {
  }
  
  const sendMessage = (e) => {
-     e.preventDefault();
+     e?.preventDefault();
      sendingSPlay();
      const data = {
           senderName : myInfo.userName,
@@ -200,12 +200,16 @@ useEffect(() => {
           dispatch({type:'NEW_USER_ADD_CLEAR'})
            // eslint-disable-next-line react-hooks/exhaustive-deps
      },[new_user_add]);
+     const isMobile = window.innerWidth <= 768; // simple check
 
      useEffect(() => {
-         if(friends && friends.length > 0)
-         setCurrentFriend(friends[0].fndInfo)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-     },[friends]);
+          if (!isMobile) {
+               if (friends && friends.length > 0) {
+                    setCurrentFriend(friends[0].fndInfo)
+               }
+          }
+          // eslint-disable-next-line react-hooks/exhaustive-deps
+     }, [friends]);
 
 
      useEffect(() => {
@@ -308,8 +312,11 @@ useEffect(() => {
               }
           }
       }
+const base64Image = myInfo?.image?.data;
+const mimeType = myInfo?.image?.contentType;
+const imageSrc = base64Image && mimeType ? `data:${mimeType};base64,${base64Image}` : '/default.png';
 
-
+ 
   return (
        <div className={themeMood === 'dark' ? 'messenger theme' : 'messenger' }>
             <Toaster
@@ -324,13 +331,15 @@ useEffect(() => {
             />
 
 
-<div className='row'>
-     <div className='col-3'>
-          <div className='left-side'>
+<div className={`messenger ${window.innerWidth <= 768 && currentfriend ? 'mobile-chat-active' : ''}`}>
+
+  <div className='row'>
+    <div className='col-3'>
+      <div className='left-side'>
                <div className='top'>
                     <div className='image-name'>
                          <div className='image'>
-                              <img src={`./image/${myInfo.image}`} alt='' />
+                              <img src={imageSrc} alt='' />
 
                          </div>
                          <div className='name'>
@@ -402,26 +411,27 @@ useEffect(() => {
                </div>
 
           </div>
-                      
-                 </div>
+                  
+    </div>
 
-     {
-          currentfriend ?  <RightSide 
-          currentfriend={currentfriend}
-          inputHendle={inputHendle}
-          newMessage={newMessage}
-          sendMessage={sendMessage}
-          message={message}
-          scrollRef= {scrollRef}
-          emojiSend = {emojiSend}
-          ImageSend= {ImageSend}
-          activeUser = {activeUser}
-          typingMessage = {typingMessage}
-          /> : 'Please Select your Friend'
-     }
-                
+    {currentfriend ? (
+      <RightSide
+        currentfriend={currentfriend}
+        inputHendle={inputHendle}
+        newMessage={newMessage}
+        sendMessage={sendMessage}
+        message={message}
+        scrollRef={scrollRef}
+        emojiSend={emojiSend}
+        ImageSend={ImageSend}
+        activeUser={activeUser}
+        typingMessage={typingMessage}
+      />
+    ) : ""}
+  </div>
+</div>
 
-            </div>
+
 
        </div>
   )

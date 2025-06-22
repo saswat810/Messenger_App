@@ -18,6 +18,7 @@ const authState = {
   myInfo: ''
 };
 
+// 🔐 Decode the JWT token and check expiry
 const tokenDecode = (token) => {
   try {
     const tokenDecoded = deCodeToken(token);
@@ -32,17 +33,23 @@ const tokenDecode = (token) => {
   }
 };
 
+// ✅ Load token and image from localStorage on app start
 const getToken = localStorage.getItem('authToken');
+const getUserImage = localStorage.getItem('userImage');
 
 if (getToken) {
   const getInfo = tokenDecode(getToken);
   if (getInfo) {
-    authState.myInfo = getInfo;
+    authState.myInfo = {
+      ...getInfo,
+      image: getUserImage ? JSON.parse(getUserImage) : null
+    };
     authState.authenticate = true;
     authState.loading = false;
   }
 }
 
+// ✅ Reducer Function
 export const authReducer = (state = authState, action) => {
   const { payload, type } = action;
 
@@ -62,9 +69,19 @@ export const authReducer = (state = authState, action) => {
     // Save token to localStorage
     localStorage.setItem('authToken', payload.token);
 
+    // Save user image (base64 + contentType) to localStorage
+    if (payload.userImage) {
+      localStorage.setItem('userImage', JSON.stringify(payload.userImage));
+    }
+
+    const completeInfo = {
+      ...myInfo,
+      image: payload.userImage || null
+    };
+
     return {
       ...state,
-      myInfo: myInfo,
+      myInfo: completeInfo,
       successMessage: payload.successMessage,
       error: '',
       authenticate: true,
@@ -87,8 +104,8 @@ export const authReducer = (state = authState, action) => {
   }
 
   if (type === LOGOUT_SUCCESS) {
-    // Clear token from localStorage on logout
     localStorage.removeItem('authToken');
+    localStorage.removeItem('userImage');
 
     return {
       ...state,

@@ -17,7 +17,9 @@ export const userRegister = (data) => {
                     type : REGISTER_SUCCESS,
                     payload:{
                          successMessage: response.data.successMessage,
-                         token : response.data.token
+                         token : response.data.token,
+                         userImage : response.data.image
+
                     }
                })
 
@@ -67,10 +69,10 @@ export const userLogin = (userData) => async (dispatch) => {
       type: USER_LOGIN_SUCCESS,
       payload: {
         successMessage: response.data.successMessage,
-        token: response.data.token
+        token: response.data.token,
+        userImage : response.data.user.image
       }
     });
-
     // Save token in localStorage for persistence
     localStorage.setItem('authToken', response.data.token);
 

@@ -10,8 +10,7 @@ const Register = () => {
      const navigate = useNavigate();
      const alert = useAlert();
 
-     const {authenticate,error,successMessage,myInfo} = useSelector(state=>state.auth);
-     console.log(myInfo);
+     const {authenticate,error,successMessage} = useSelector(state=>state.auth);
 
      const dispatch = useDispatch();
 

@@ -28,33 +28,22 @@ module.exports.userRegister = (req, res) => {
     if (!confirmPassword) errors.push('Please provide your Confirm Password');
     if (password && confirmPassword && password !== confirmPassword) errors.push('Passwords do not match');
     if (password && password.length < 6) errors.push('Password must be at least 6 characters');
-    if (!imageFile) errors.push('Please provide a user image');
-console.log("errors", errors)
+    if (!imageFile) errors.push('Please upload a profile image');
+
     if (errors.length > 0) {
-      return res.status(400).json({
-        error: { errorMessage: errors }
-      });
+      return res.status(400).json({ error: { errorMessage: errors } });
     }
 
     try {
       const existingUser = await registerModel.findOne({ email });
       if (existingUser) {
-          console.log("existingUse error", 'Email is already registered')
         return res.status(409).json({
           error: { errorMessage: ['Email is already registered'] }
         });
       }
-console.log("existingUser", existingUser)
-      // Read image buffer safely
-      let imageBuffer;
-      try {
-        imageBuffer = fs.readFileSync(imageFile.filepath);
-      } catch (fileErr) {
-        console.error('Image read error:', fileErr);
-        return res.status(500).json({
-          error: { errorMessage: ['Could not read uploaded image file'] }
-        });
-      }
+
+      // ✅ Read and store the image as a buffer
+      const imageBuffer = fs.readFileSync(imageFile.filepath);
 
       const newUser = await registerModel.create({
         userName,
@@ -65,7 +54,6 @@ console.log("existingUser", existingUser)
           contentType: imageFile.mimetype
         }
       });
-console.log("imageBuffer", imageBuffer,"newUser", newUser)
 
       const token = jwt.sign({
         id: newUser._id,
@@ -82,10 +70,13 @@ console.log("imageBuffer", imageBuffer,"newUser", newUser)
         secure: true,
         sameSite: 'None'
       };
-console.log("token", token,"options", options)
 
       return res.status(201).cookie('authToken', token, options).json({
         successMessage: 'Registration successful',
+        image: {
+      contentType: newUser.image?.contentType,
+      data: newUser.image?.data?.toString('base64')
+    },
         token
       });
 
@@ -97,6 +88,7 @@ console.log("token", token,"options", options)
     }
   });
 };
+
 
 
 module.exports.userLogin = async (req,res) => {
@@ -125,24 +117,31 @@ module.exports.userLogin = async (req,res) => {
 
                if(checkUser){
                     const matchPassword = await bcrypt.compare(password, checkUser.password );
-
                     if(matchPassword) {
                          const token = jwt.sign({
                               id : checkUser._id,
                               email: checkUser.email,
-                              userName: checkUser.userName,
-                              image: checkUser.image,
+                              userName: checkUser.userName,                            
                               registerTime : checkUser.createdAt
                          }, process.env.SECRET,{
                               expiresIn: process.env.TOKEN_EXP
                          }); 
       const options = { expires : new Date(Date.now() + process.env.COOKIE_EXP * 24 * 60 * 60 * 1000 )}
-     res.status(200).cookie('authToken',token, options).json({
-          successMessage : 'Your Login Successful',
-          matchPassword: matchPassword,
-          checkUser: checkUser,
-          token
-     })
+      
+     res.status(200).cookie('authToken', token, options).json({
+  successMessage: 'Your Login Successful',
+  token,
+  user: {
+    id: checkUser._id,
+    email: checkUser.email,
+    userName: checkUser.userName,
+    image: {
+      contentType: checkUser.image?.contentType,
+      data: checkUser.image?.data?.toString('base64')
+    }
+  }
+});
+
 
                     } else{
                          res.status(400).json({
