@@ -1,10 +1,28 @@
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+const cors = require('cors');
 
-const io = require('socket.io')(8000,{
-     cors : {
-          origin : '*',
-          methods : ['GET','POST']
-     }
-})
+const app = express();
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: [
+      'https://messenger-app-new.onrender.com',
+      'https://messenger-app-1-vypv.onrender.com',
+      'http://localhost:8000'
+    ],
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
+});
+// const io = require('socket.io')(8000,{
+//      cors : {
+//           origin : '*',
+//           methods : ['GET','POST']
+//      }
+// })
  
 let users = [];
 const addUser = (userId,socketId,userInfo) => {
