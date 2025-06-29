@@ -32,7 +32,7 @@ const Messenger = () => {
  const [typingMessage, setTypingMessage] = useState('');
 
  useEffect(() => {
-    socket.current = io('wss://messenger-app-1-vypv.onrender.com' || 'ws://localhost:8000',{
+    socket.current = io('wss://messenger-app-1-vypv.onrender.com',{
      transports: ['websocket']
     });
     socket.current.on('getMessage',(data) => {
