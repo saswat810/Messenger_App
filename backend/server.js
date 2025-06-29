@@ -19,6 +19,7 @@ const server = http.createServer(app); // ✅ use http server
 const io = socketIo(server, {
   cors: {
     origin: [
+      'https://messenger-app-1-vypv.onrender.com',
       'https://messenger-app-new.onrender.com',
       'http://localhost:3000',
     ],
@@ -100,6 +101,7 @@ io.on('connection', socket => {
 // Express middlewares
 app.use(cors({
   origin: [
+    'https://messenger-app-1-vypv.onrender.com',
     'https://messenger-app-new.onrender.com',
     'http://localhost:3000',
   ],

@@ -33,7 +33,7 @@ const Messenger = () => {
 
  useEffect(() => {
     const SOCKET_URL = process.env.NODE_ENV === 'production'
-    ? 'wss://messenger-app-new.onrender.com'
+    ? 'wss://messenger-app-1-vypv.onrender.com'
     : 'ws://localhost:5000';
 
   console.log('Connecting socket to', SOCKET_URL); // ✅ Add this
