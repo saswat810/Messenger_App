@@ -10,7 +10,7 @@
     "frontbuild": "npm install --frozen-lockfile && npm install --prefix frontend --frozen-lockfile && npm run build --prefix frontend",
     "socketbuild": "npm install --frozen-lockfile && npm install --prefix socket --frozen-lockfile",
 "build": "npm install --frozen-lockfile &&  npm install --prefix frontend --frozen-lockfile && npm run build --prefix frontend && npm install --prefix backend --frozen-lockfile && npm install --prefix socket --frozen-lockfile",
-    "dev": "concurrently \" npm run server\" \" npm run client \" \" npm run socket \""
+    "dev": "concurrently \" npm run server\" \" npm run client \""
   },
   "keywords": [],
   "author": "",

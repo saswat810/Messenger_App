@@ -32,9 +32,15 @@ const Messenger = () => {
  const [typingMessage, setTypingMessage] = useState('');
 
  useEffect(() => {
-    socket.current = io('wss://messenger-app-1-vypv.onrender.com',{
-     transports: ['websocket']
-    });
+    const SOCKET_URL =
+  process.env.NODE_ENV === 'production'
+    ? 'wss://messenger-app-new.onrender.com'
+    : 'ws://localhost:5000';
+
+socket.current = io(SOCKET_URL, {
+  transports: ['websocket']
+});
+
     socket.current.on('getMessage',(data) => {
         setSocketMessage(data);
     })
