@@ -38,7 +38,9 @@ const Messenger = () => {
 
   console.log('Connecting socket to', SOCKET_URL); // ✅ Add this
   socket.current = io(SOCKET_URL, {
-    transports: ['websocket']
+     path: '/socket.io', // Optional but explicit
+     transports: ['websocket'],
+     withCredentials: true
   });
 
   socket.current.on('connect', () => {
