@@ -2,15 +2,15 @@
   "name": "messenger",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "server": "nodemon server.js",
     "client": "npm start --prefix frontend",
     "socket": "nodemon socket/socket.js",
     "frontbuild": "npm install --frozen-lockfile && npm install --prefix frontend --frozen-lockfile && npm run build --prefix frontend",
     "socketbuild": "npm install --frozen-lockfile && npm install --prefix socket --frozen-lockfile",
-    "build": "npm install --frozen-lockfile && npm install --prefix frontend --frozen-lockfile && npm run build --prefix frontend && npm install --prefix socket --frozen-lockfile",
-    "dev": "concurrently \" npm run server\" \" npm run client \" \" npm run socket \""
+    "build": "npm install --frozen-lockfile && npm install --prefix frontend --frozen-lockfile && npm run build --prefix frontend",
+    "dev": "concurrently \" npm run server\" \" npm run client \""
   },
   "keywords": [],
   "author": "",

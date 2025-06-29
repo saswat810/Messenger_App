@@ -32,14 +32,23 @@ const Messenger = () => {
  const [typingMessage, setTypingMessage] = useState('');
 
  useEffect(() => {
-    const SOCKET_URL =
-  process.env.NODE_ENV === 'production'
+    const SOCKET_URL = process.env.NODE_ENV === 'production'
     ? 'wss://messenger-app-new.onrender.com'
     : 'ws://localhost:5000';
 
-socket.current = io(SOCKET_URL, {
-  transports: ['websocket']
-});
+  console.log('Connecting socket to', SOCKET_URL); // ✅ Add this
+  socket.current = io(SOCKET_URL, {
+    transports: ['websocket']
+  });
+
+  socket.current.on('connect', () => {
+    console.log('✅ Socket connected:', socket.current.id);
+  });
+
+  socket.current.on('connect_error', err => {
+    console.error('❌ Socket connection error:', err);
+  });
+
 
     socket.current.on('getMessage',(data) => {
         setSocketMessage(data);
