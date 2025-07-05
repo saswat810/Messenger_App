@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {REGISTER_FAIL,REGISTER_SUCCESS,USER_LOGIN_SUCCESS,USER_LOGIN_FAIL} from "../types/authType";
 
+const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 export const userRegister = (data) => {
      return async (dispatch) => {
 
@@ -10,7 +11,7 @@ export const userRegister = (data) => {
                } 
           }
           try{
-               const response = await axios.post('/api/messenger/user-register',data,config);
+               const response = await axios.post(`${BASE_URL}/api/messenger/user-register`,data,config);
                localStorage.setItem('authToken',response.data.token);
 
                dispatch({
@@ -38,7 +39,7 @@ export const userRegister = (data) => {
 
 export const userLogout = () => async(dispatch) => {
      try{
-         const response = await axios.post('/api/messenger/user-logout');
+         const response = await axios.post(`${BASE_URL}/api/messenger/user-logout`);
          if(response.data.success){
              localStorage.removeItem('authToken');
              dispatch({
@@ -55,7 +56,7 @@ export const userLogout = () => async(dispatch) => {
 export const userLogin = (userData) => async (dispatch) => {
   try {
     const response = await axios.post(
-      '/api/messenger/user-login',
+      `${BASE_URL}/api/messenger/user-login`,
       userData,
       {
         headers: {
