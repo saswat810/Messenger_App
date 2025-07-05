@@ -32,9 +32,20 @@ const Messenger = () => {
  const [typingMessage, setTypingMessage] = useState('');
 
  useEffect(() => {
-    const SOCKET_URL = process.env.NODE_ENV === 'production'
-    ? 'wss://messenger-app-1-vypv.onrender.com'
-    : 'ws://localhost:5000';
+ let SOCKET_URL = 'ws://localhost:5000'; // default (for development)
+
+if (process.env.NODE_ENV === 'production') {
+  const hostname = window.location.hostname;
+
+  if (hostname.includes('vercel.app')) {
+    SOCKET_URL = 'wss://your-vercel-websocket-url.com'; // 🔁 replace with correct WebSocket URL
+  } else if (hostname.includes('render.com') || hostname.includes('onrender.com')) {
+    SOCKET_URL = 'wss://messenger-app-1-vypv.onrender.com';
+  } else {
+    SOCKET_URL = 'wss://default-production-socket-url.com'; // fallback (optional)
+  }
+}
+
 
   console.log('Connecting socket to', SOCKET_URL); // ✅ Add this
   socket.current = io(SOCKET_URL, {

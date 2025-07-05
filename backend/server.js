@@ -20,6 +20,7 @@ const io = socketIo(server, {
   cors: {
     origin: [
       'https://messenger-app-1-vypv.onrender.com',
+      'https://messenger-app-ljle.vercel.app',
       'https://messenger-app-new.onrender.com',
       'http://localhost:3000',
     ],
@@ -102,6 +103,7 @@ io.on('connection', socket => {
 app.use(cors({
   origin: [
     'https://messenger-app-1-vypv.onrender.com',
+    'https://messenger-app-ljle.vercel.app',
     'https://messenger-app-new.onrender.com',
     'http://localhost:3000',
   ],
